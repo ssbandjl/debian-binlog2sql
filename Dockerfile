@@ -1,5 +1,5 @@
 FROM python:3.7.9-slim-stretch
 RUN apt-get update && apt-get install git -y 
-RUN git clone https://github.com/nanjiyueguang/debian-binlog2sql.git && cd debian-binlog2sql
-RUN pip install -r requirements.txt
+RUN git clone https://github.com/nanjiyueguang/debian-binlog2sql.git
+RUN cd debian-binlog2sql && pip install -r requirements.txt
 CMD ["bash"]
