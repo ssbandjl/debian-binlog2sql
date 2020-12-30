@@ -39,8 +39,9 @@ def create_unique_file(filename):
     if version >= 1000:
         raise OSError('cannot create unique file %s.[0-1000]' % filename)
     return result_file
-
-
+# 任何对象，只要正确实现了上下文管理，就可以用于with语句, @contextmanager这个decorator接受一个generator，用yield语句把with ... as var把变量输出出去，然后，with语句就可以正常地工作了
+# https://www.liaoxuefeng.com/wiki/1016959663602400/1115615597164000
+# https://docs.python.org/3/library/contextlib.html
 @contextmanager
 def temp_open(filename, mode):
     f = open(filename, mode)
@@ -103,7 +104,7 @@ def parse_args():
 
 
 def command_line_args(args):
-    need_print_help = False if args else True
+    need_print_help = False if args else True #如果参数为空,则将帮助标志置为True
     parser = parse_args()
     args = parser.parse_args(args)
     if args.help or need_print_help:

@@ -8,6 +8,7 @@ from pymysqlreplication import BinLogStreamReader
 from pymysqlreplication.event import QueryEvent, RotateEvent, FormatDescriptionEvent
 from binlog2sql_util import command_line_args, concat_sql_from_binlog_event, create_unique_file, temp_open, \
     reversed_lines, is_dml_event, event_type
+from dateutil import tz
 
 
 class Binlog2sql(object):
@@ -25,8 +26,10 @@ class Binlog2sql(object):
         self.conn_setting = connection_settings
         self.start_file = start_file
         self.start_pos = start_pos if start_pos else 4    # use binlog v4
+        logger.log(f"start_pos:{self.start_pos}")
         self.end_file = end_file if end_file else start_file
         self.end_pos = end_pos
+        logger.log(f"end_pos:{self.end_pos}")
         if start_time:
             self.start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         else:
@@ -37,50 +40,76 @@ class Binlog2sql(object):
             self.stop_time = datetime.datetime.strptime('2999-12-31 00:00:00', "%Y-%m-%d %H:%M:%S")
 
         self.only_schemas = only_schemas if only_schemas else None
+        logger.log(f"self.only_schemas:{self.only_schemas}")
         self.only_tables = only_tables if only_tables else None
+        logger.log(f"self.only_tables:{self.only_tables}")
         self.no_pk, self.flashback, self.stop_never, self.back_interval = (no_pk, flashback, stop_never, back_interval)
         self.only_dml = only_dml
         self.sql_type = [t.upper() for t in sql_type] if sql_type else []
-
+        logger.log(f"self.no_pk:{self.no_pk}")
+        logger.log(f"self.flashback:{self.flashback}")
+        logger.log(f"self.stop_never:{self.stop_never}")
+        logger.log(f"self.back_interval:{self.back_interval}")
+        logger.log(f"self.only_dml:{self.only_dml}")
+        logger.log(f"self.sql_type:{self.sql_type}")
         self.binlogList = []
         self.connection = pymysql.connect(**self.conn_setting)
         with self.connection as cursor:
+            logger.log(f"执行:SHOW MASTER STATUS")
             cursor.execute("SHOW MASTER STATUS")
+            #efo_file:mysql-slave-bin.000015, eof_pos:494
             self.eof_file, self.eof_pos = cursor.fetchone()[:2]
+            logger.log(f"efo_file:{self.eof_file}, eof_pos:{self.eof_pos}")
+            logger.log(f"执行:SHOW MASTER LOGS")
             cursor.execute("SHOW MASTER LOGS")
-            bin_index = [row[0] for row in cursor.fetchall()]
+            bin_index = [row[0] for row in cursor.fetchall()] #get log_name list
+            logger.log(f"bin_index:{bin_index}")
             if self.start_file not in bin_index:
                 raise ValueError('parameter error: start_file %s not in mysql server' % self.start_file)
             binlog2i = lambda x: x.split('.')[1]
             for binary in bin_index:
                 if binlog2i(self.start_file) <= binlog2i(binary) <= binlog2i(self.end_file):
                     self.binlogList.append(binary)
-
+            logger.log(f"执行:SELECT @@server_id")
             cursor.execute("SELECT @@server_id")
             self.server_id = cursor.fetchone()[0]
             if not self.server_id:
                 raise ValueError('missing server_id in %s:%s' % (self.conn_setting['host'], self.conn_setting['port']))
+        # self.__dict__
 
     def process_binlog(self):
         stream = BinLogStreamReader(connection_settings=self.conn_setting, server_id=self.server_id,
                                     log_file=self.start_file, log_pos=self.start_pos, only_schemas=self.only_schemas,
                                     only_tables=self.only_tables, resume_stream=True, blocking=True)
+        # for binlogevent in stream:
+        #     binlogevent.dump()
+        #     return
 
         flag_last_event = False
         e_start_pos, last_pos = stream.log_pos, stream.log_pos
+        logger.log(f"e_start_pos:{e_start_pos}, last_pos:{last_pos}") #4
         # to simplify code, we do not use flock for tmp_file.
         tmp_file = create_unique_file('%s.%s' % (self.conn_setting['host'], self.conn_setting['port']))
         with temp_open(tmp_file, "w") as f_tmp, self.connection as cursor:
             for binlog_event in stream:
-                if not self.stop_never:
+                # logger.log(f"binlog_event:{binlog_event}")
+                if not self.stop_never: #Continuously parse binlog. default: stop at the latest event when you start.
+                    # logger.log(f"### not parse binlog continue, binlog_evnet: ###")
+                    # # print(f"binlog_event:{binlog_event}")
+                    # binlog_event
+                    # logger.log(f"### not parse binlog continue, end: ###")
                     try:
                         event_time = datetime.datetime.fromtimestamp(binlog_event.timestamp)
                     except OSError:
                         event_time = datetime.datetime(1980, 1, 1, 0, 0)
+                    logger.log(f"event_time:{event_time}, log_pos:{binlog_event.packet.log_pos}, type:{type(binlog_event)}")
+                    # logger.log(f"eof_file:{self.eof_file}")
+                    #if to then event end like 1555
                     if (stream.log_file == self.end_file and stream.log_pos == self.end_pos) or \
                             (stream.log_file == self.eof_file and stream.log_pos == self.eof_pos):
+                        logger.log(f"flag_last_event = True")
                         flag_last_event = True
-                    elif event_time < self.start_time:
+                    elif event_time < self.start_time: #if current event time befor start time
                         if not (isinstance(binlog_event, RotateEvent)
                                 or isinstance(binlog_event, FormatDescriptionEvent)):
                             last_pos = binlog_event.packet.log_pos
@@ -139,12 +168,38 @@ class Binlog2sql(object):
         pass
 
 
+class LogUtil(object):
+    """ 日志记录 """
+    def __init__(self):
+        pass
+    def log(self, content):
+        """ 往文件日志添加文件 """
+        from_zone = tz.gettz('UTC')
+        to_zone = tz.gettz('CST')
+        time_zone_now = datetime.datetime.utcnow()
+        time_zone_now = time_zone_now.replace(tzinfo=from_zone)
+        local = time_zone_now.astimezone(to_zone)
+        print("[" + local.strftime("%Y-%m-%d %H:%M:%S") + "]" + content + "\n")
+
+
 if __name__ == '__main__':
+    logger = LogUtil()
+    logger.log("解析位置参数")
     args = command_line_args(sys.argv[1:])
     conn_setting = {'host': args.host, 'port': args.port, 'user': args.user, 'passwd': args.password, 'charset': 'utf8'}
+    logger.log(f"定义连接字符串, conn_setting:{conn_setting}")
+    #用构造器实例化
     binlog2sql = Binlog2sql(connection_settings=conn_setting, start_file=args.start_file, start_pos=args.start_pos,
                             end_file=args.end_file, end_pos=args.end_pos, start_time=args.start_time,
                             stop_time=args.stop_time, only_schemas=args.databases, only_tables=args.tables,
                             no_pk=args.no_pk, flashback=args.flashback, stop_never=args.stop_never,
                             back_interval=args.back_interval, only_dml=args.only_dml, sql_type=args.sql_type)
+    # binlog2sql.__dict__
+    logger.log(f"调用实例方法:process_binlog()")
+    logger.log(f"server_id:{binlog2sql.server_id}")
+    logger.log(f"binlogList:{binlog2sql.binlogList}")
+    logger.log(f"start_file:{binlog2sql.start_file}")
+    logger.log(f"start_time:{binlog2sql.start_time}")
+    logger.log(f"stop_time:{binlog2sql.stop_time}")
+    logger.log(f"stop_never:{binlog2sql.stop_never}")
     binlog2sql.process_binlog()
