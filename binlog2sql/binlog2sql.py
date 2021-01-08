@@ -123,21 +123,25 @@ class Binlog2sql(object):
                     #     raise ValueError('unknown binlog file or position')
 
                 if isinstance(binlog_event, QueryEvent) and binlog_event.query == 'BEGIN':
+                    logger.log(f"isinstance(binlog_event, QueryEvent) and binlog_event.query == 'BEGIN', query:{binlog_event.query}")
                     e_start_pos = last_pos
 
-                if isinstance(binlog_event, QueryEvent) and not self.only_dml:
+                if isinstance(binlog_event, QueryEvent) and not self.only_dml: #INSERT/UPDATE/DELETE
+                    logger.log(f"QueryEvent and not self.only_dml, exec concat_sql_from_binlog_event, query:\n{binlog_event.query}")
                     sql = concat_sql_from_binlog_event(cursor=cursor, binlog_event=binlog_event,
                                                        flashback=self.flashback, no_pk=self.no_pk)
                     if sql:
-                        print(sql)
+                        print(f"sql:\n{sql}")
                 elif is_dml_event(binlog_event) and event_type(binlog_event) in self.sql_type:
                     for row in binlog_event.rows:
+                        logger.log(f"row:{row}")
                         sql = concat_sql_from_binlog_event(cursor=cursor, binlog_event=binlog_event, no_pk=self.no_pk,
                                                            row=row, flashback=self.flashback, e_start_pos=e_start_pos)
                         if self.flashback:
                             f_tmp.write(sql + '\n')
                         else:
-                            print(sql)
+                            # print(sql)
+                            print(f"sql:\n{sql}")
 
                 if not (isinstance(binlog_event, RotateEvent) or isinstance(binlog_event, FormatDescriptionEvent)):
                     last_pos = binlog_event.packet.log_pos
@@ -195,11 +199,11 @@ if __name__ == '__main__':
                             no_pk=args.no_pk, flashback=args.flashback, stop_never=args.stop_never,
                             back_interval=args.back_interval, only_dml=args.only_dml, sql_type=args.sql_type)
     # binlog2sql.__dict__
-    logger.log(f"调用实例方法:process_binlog()")
     logger.log(f"server_id:{binlog2sql.server_id}")
     logger.log(f"binlogList:{binlog2sql.binlogList}")
     logger.log(f"start_file:{binlog2sql.start_file}")
     logger.log(f"start_time:{binlog2sql.start_time}")
     logger.log(f"stop_time:{binlog2sql.stop_time}")
     logger.log(f"stop_never:{binlog2sql.stop_never}")
+    logger.log(f"调用实例方法:process_binlog()")
     binlog2sql.process_binlog()

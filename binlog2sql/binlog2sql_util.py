@@ -164,11 +164,11 @@ def event_type(event):
         t = 'DELETE'
     return t
 
-
+#
 def concat_sql_from_binlog_event(cursor, binlog_event, row=None, e_start_pos=None, flashback=False, no_pk=False):
     if flashback and no_pk:
         raise ValueError('only one of flashback or no_pk can be True')
-    if not (isinstance(binlog_event, WriteRowsEvent) or isinstance(binlog_event, UpdateRowsEvent)
+    if not (isinstance(binlog_event, WriteRowsEvent) or isinstance(binlog_event, UpdateRowsEvent) #limit by eventType
             or isinstance(binlog_event, DeleteRowsEvent) or isinstance(binlog_event, QueryEvent)):
         raise ValueError('binlog_event must be WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent or QueryEvent')
 
