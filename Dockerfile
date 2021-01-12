@@ -8,7 +8,7 @@ COPY . .
 RUN pip install -r requirements.txt
 # ENTRYPOINT ["sh" ,"-c", "python3 /debian-binlog2sql/binlog2sql/binlog2sql.py"] 
 # ENTRYPOINT ["tail","-f","/dev/null"] 
-ENTRYPOINT ["run.sh"] 
+ENTRYPOINT ["sh", "run.sh"] 
 CMD [""]
 
 
