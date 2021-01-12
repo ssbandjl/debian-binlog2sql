@@ -12,6 +12,8 @@ CMD [""]
 
 
 # docker build -t debian-binlog2sql:v1 .
+# docker run --name binlog2sql --rm --entrypoint='/bin/bash' -it harbor.cloudminds.com/mysql/debian-binlog2sql:latest
+
 # FROM centos/python-36-centos7
 # LABEL MAINTAINER="Link Ma"
 # USER root
