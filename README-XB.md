@@ -1,13 +1,15 @@
 binlog2sql
 ========================
 
-
 调式
 docker run --name binlog2sql --rm --entrypoint='/bin/bash' -it harbor.cloudminds.com/mysql/debian-binlog2sql:latest
 cd /debian-binlog2sql/binlog2sql
 python3 binlog2sql.py
 
-`python binlog2sql.py -h 172.16.24.200 -u root -p test-mysql -P 30448 --start-file='mysql-master-bin.000008'`
+```python
+cd binlog2sql
+python binlog2sql.py -h 172.16.24.200 -u root -p test-mysql -P 30448 --start-file='mysql-master-bin.000008'
+```
 
 从MySQL binlog解析出你要的SQL。根据不同选项，你可以得到原始SQL、回滚SQL、去除主键的INSERT SQL等。
 

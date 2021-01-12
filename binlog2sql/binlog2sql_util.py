@@ -54,7 +54,8 @@ def temp_open(filename, mode):
 
 def parse_args():
     """parse args for binlog2sql"""
-
+    # 参考链接: https://docs.python.org/zh-cn/3/library/argparse.html
+    # nargs - 命令行参数应当消耗的数目
     parser = argparse.ArgumentParser(description='Parse MySQL binlog to SQL you want', add_help=False)
     connect_setting = parser.add_argument_group('connect setting')
     connect_setting.add_argument('-h', '--host', dest='host', type=str,
