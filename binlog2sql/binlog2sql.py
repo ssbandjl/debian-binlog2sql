@@ -140,8 +140,8 @@ class Binlog2sql(object):
                         if self.flashback:
                             f_tmp.write(sql + '\n')
                         else:
-                            # print(sql)
-                            print(f"sql:\n{sql}")
+                            print(sql)
+                            # print(f"sql:\n{sql}")
 
                 if not (isinstance(binlog_event, RotateEvent) or isinstance(binlog_event, FormatDescriptionEvent)):
                     last_pos = binlog_event.packet.log_pos
