@@ -9,7 +9,7 @@ RUN pip install -r requirements.txt
 # ENTRYPOINT ["sh" ,"-c", "python3 /debian-binlog2sql/binlog2sql/binlog2sql.py"] 
 # ENTRYPOINT ["tail","-f","/dev/null"] 
 ENTRYPOINT ["/bin/bash", "run.sh"] 
-CMD [""]
+# CMD [""]
 
 
 # docker build -t harbor.cloudminds.com/library/debian-binlog2sql:1.0 .
