@@ -4,8 +4,8 @@ WORKDIR binlog2sql
 # RUN apt-get update && apt-get install git -y 
 RUN apt-get update
 # RUN git clone https://github.com/nanjiyueguang/debian-binlog2sql.git
-COPY binlog2sql /
-RUN cd /binlog2sql && pip install -r requirements.txt
+COPY . .
+RUN pip install -r requirements.txt
 # ENTRYPOINT ["sh" ,"-c", "python3 /debian-binlog2sql/binlog2sql/binlog2sql.py"] 
 ENTRYPOINT ["/run.sh"] 
 CMD [""]
