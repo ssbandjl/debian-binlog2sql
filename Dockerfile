@@ -7,11 +7,12 @@ RUN apt-get update
 COPY . .
 RUN pip install -r requirements.txt
 # ENTRYPOINT ["sh" ,"-c", "python3 /debian-binlog2sql/binlog2sql/binlog2sql.py"] 
-ENTRYPOINT ["/run.sh"] 
+ENTRYPOINT ["tail", "-f", "/dev/null"] 
+# ENTRYPOINT ["/run.sh"] 
 CMD [""]
 
 
-# docker build -t debian-binlog2sql:v1 .
+# docker build -t harbor.cloudminds.com/library/debian-binlog2sql:1.0 .
 # docker run --name binlog2sql --rm --entrypoint='/bin/bash' -it harbor.cloudminds.com/mysql/debian-binlog2sql:latest
 
 # FROM centos/python-36-centos7
