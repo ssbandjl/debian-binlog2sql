@@ -87,7 +87,7 @@ class Binlog2sql(object):
 
         flag_last_event = False
         e_start_pos, last_pos = stream.log_pos, stream.log_pos
-        logger.log(f"e_start_pos:{e_start_pos}, last_pos:{last_pos}") #4
+        # logger.log(f"e_start_pos:{e_start_pos}, last_pos:{last_pos}") #4
         # to simplify code, we do not use flock for tmp_file.
         tmp_file = create_unique_file('%s.%s' % (self.conn_setting['host'], self.conn_setting['port']))
         with temp_open(tmp_file, "w") as f_tmp, self.connection as cursor:
@@ -201,9 +201,8 @@ if __name__ == '__main__':
     # binlog2sql.__dict__
     logger.log(f"server_id:{binlog2sql.server_id}")
     logger.log(f"binlogList:{binlog2sql.binlogList}")
-    logger.log(f"start_file:{binlog2sql.start_file}")
-    logger.log(f"start_time:{binlog2sql.start_time}")
-    logger.log(f"stop_time:{binlog2sql.stop_time}")
+    logger.log(f"start_file:{binlog2sql.start_file}, end_file:{binlog2sql.end_file}")
+    logger.log(f"start_time:{binlog2sql.start_time, stop_time:{binlog2sql.stop_time}}")
     logger.log(f"stop_never:{binlog2sql.stop_never}")
     logger.log(f"调用实例方法:process_binlog()")
     binlog2sql.process_binlog()
