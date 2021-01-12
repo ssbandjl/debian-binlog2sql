@@ -5,13 +5,13 @@ WORKDIR binlog2sql
 RUN apt-get update
 # RUN git clone https://github.com/nanjiyueguang/debian-binlog2sql.git
 COPY binlog2sql /
-RUN cd binlog2sql && pip install -r requirements.txt
+RUN cd /binlog2sql && pip install -r requirements.txt
 # ENTRYPOINT ["sh" ,"-c", "python3 /debian-binlog2sql/binlog2sql/binlog2sql.py"] 
 ENTRYPOINT ["/run.sh"] 
 CMD [""]
 
 
-
+# docker build -t debian-binlog2sql:v1 .
 # FROM centos/python-36-centos7
 # LABEL MAINTAINER="Link Ma"
 # USER root
