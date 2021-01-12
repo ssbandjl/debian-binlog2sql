@@ -102,7 +102,7 @@ class Binlog2sql(object):
                         event_time = datetime.datetime.fromtimestamp(binlog_event.timestamp)
                     except OSError:
                         event_time = datetime.datetime(1980, 1, 1, 0, 0)
-                    logger.log(f"event_time:{event_time}, log_pos:{binlog_event.packet.log_pos}, type:{type(binlog_event)}")
+                    # logger.log(f"event_time:{event_time}, log_pos:{binlog_event.packet.log_pos}, type:{type(binlog_event)}")
                     # logger.log(f"eof_file:{self.eof_file}")
                     #if to then event end like 1555
                     if (stream.log_file == self.end_file and stream.log_pos == self.end_pos) or \
@@ -123,11 +123,11 @@ class Binlog2sql(object):
                     #     raise ValueError('unknown binlog file or position')
 
                 if isinstance(binlog_event, QueryEvent) and binlog_event.query == 'BEGIN':
-                    logger.log(f"isinstance(binlog_event, QueryEvent) and binlog_event.query == 'BEGIN', query:{binlog_event.query}")
+                    # logger.log(f"isinstance(binlog_event, QueryEvent) and binlog_event.query == 'BEGIN', query:{binlog_event.query}")
                     e_start_pos = last_pos
 
                 if isinstance(binlog_event, QueryEvent) and not self.only_dml: #INSERT/UPDATE/DELETE
-                    logger.log(f"QueryEvent and not self.only_dml, exec concat_sql_from_binlog_event, query:\n{binlog_event.query}")
+                    # logger.log(f"QueryEvent and not self.only_dml, exec concat_sql_from_binlog_event, query:\n{binlog_event.query}")
                     sql = concat_sql_from_binlog_event(cursor=cursor, binlog_event=binlog_event,
                                                        flashback=self.flashback, no_pk=self.no_pk)
                     if sql:
