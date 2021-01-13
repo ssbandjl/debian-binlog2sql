@@ -13,6 +13,14 @@ PARA="-h $HOST -u $USER -p $PASSWORD -P $PORT --start-file $START_FILE --stop-fi
 [ -n "$TABLES" ] && {
     PARA="$PARA -t $TABLES"
 }
+[ -n "$SQL_TYPE" ] && {
+    PARA="$PARA --sql-type $SQL_TYPE"
+}
+[ -n "$BACK_INTERVAL" ] && {
+    PARA="$PARA --back-interval $BACK_INTERVAL"
+}
+
+
 [ "$STOP_NEVER" == "True" ] && {
     PARA="$PARA --stop-never"
 }
