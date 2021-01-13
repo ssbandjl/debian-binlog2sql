@@ -7,6 +7,12 @@ PARA="-h $HOST -u $USER -p $PASSWORD -P $PORT --start-file $START_FILE --stop-fi
 [ -n "$STOP_POSITION" ] && {
     PARA="$PARA --stop-position $STOP_POSITION"
 }
+[ -n "$DATABASES" ] && {
+    PARA="$PARA -d $DATABASES"
+}
+[ -n "$TABLES" ] && {
+    PARA="$PARA -t $TABLES"
+}
 [ "$STOP_NEVER" == "True" ] && {
     PARA="$PARA --stop-never"
 }
