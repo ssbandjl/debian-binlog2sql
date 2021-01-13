@@ -204,5 +204,5 @@ if __name__ == '__main__':
     logger.log(f"start_file:{binlog2sql.start_file}, end_file:{binlog2sql.end_file}")
     logger.log(f"start_time:{binlog2sql.start_time}, stop_time:{binlog2sql.stop_time}")
     logger.log(f"stop_never:{binlog2sql.stop_never}")
-    logger.log(f"调用实例方法:process_binlog()执行Binlog转SQL\n\n")
+    logger.log(f"调用实例方法:process_binlog()执行Binlog转SQL\n")
     binlog2sql.process_binlog()

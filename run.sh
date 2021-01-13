@@ -20,11 +20,17 @@ PARA="-h $HOST -u $USER -p $PASSWORD -P $PORT --start-file $START_FILE --stop-fi
     PARA="$PARA -B"
 }
 
-echo -e "基本参数:python3 binlog2sql.py $PARA"
+#echo -e "基本参数:python3 binlog2sql.py $PARA"
 
 cd binlog2sql
 # python3 binlog2sql.py -h $HOST -u $USER -p $PASSWORD -P $PORT --start-file $START_FILE --start-position $START_POSITION --stop-file $STOP_FILE --stop-position $STOP_POSITION \
 # --start-datetime "$START_TIME" --stop-datetime "$STOP_TIME" --stop-never $STOP_NEVER -d $DATABASES -t $TABLES --only-dml $ONLY_DML --sql-type $SQL_TYPE -K $NO_PK -B $FLASHBACK \
 # --back-interval $BACK_INTERVAL
-echo -e "完整命令:python3 binlog2sql.py $PARA --start-datetime $START_TIME --stop-datetime $STOP_TIME"
-python3 binlog2sql.py $PARA --start-datetime "$START_TIME" --stop-datetime "$STOP_TIME"
+
+[ -n "$START_TIME" ] && [ -n "$STOP_TIME"] && {
+    echo -e "执行脚本:python3 binlog2sql.py $PARA --start-datetime $START_TIME --stop-datetime $STOP_TIME"
+    python3 binlog2sql.py $PARA --start-datetime "$START_TIME" --stop-datetime "$STOP_TIME"
+} || {
+    echo -e "执行脚本:python3 binlog2sql.py $PARA"
+    python3 binlog2sql.py $PARA
+}
