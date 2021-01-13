@@ -107,7 +107,7 @@ class Binlog2sql(object):
                     #if to then event end like 1555
                     if (stream.log_file == self.end_file and stream.log_pos == self.end_pos) or \
                             (stream.log_file == self.eof_file and stream.log_pos == self.eof_pos):
-                        logger.log(f"flag_last_event = True")
+                        # logger.log(f"flag_last_event = True")
                         flag_last_event = True
                     elif event_time < self.start_time: #if current event time befor start time
                         if not (isinstance(binlog_event, RotateEvent)
@@ -134,7 +134,7 @@ class Binlog2sql(object):
                         print(f"sql:\n{sql}")
                 elif is_dml_event(binlog_event) and event_type(binlog_event) in self.sql_type:
                     for row in binlog_event.rows:
-                        logger.log(f"row:{row}")
+                        # logger.log(f"row:{row}")
                         sql = concat_sql_from_binlog_event(cursor=cursor, binlog_event=binlog_event, no_pk=self.no_pk,
                                                            row=row, flashback=self.flashback, e_start_pos=e_start_pos)
                         if self.flashback:
@@ -204,5 +204,5 @@ if __name__ == '__main__':
     logger.log(f"start_file:{binlog2sql.start_file}, end_file:{binlog2sql.end_file}")
     logger.log(f"start_time:{binlog2sql.start_time}, stop_time:{binlog2sql.stop_time}")
     logger.log(f"stop_never:{binlog2sql.stop_never}")
-    logger.log(f"调用实例方法:process_binlog()执行Binlog转SQL")
+    logger.log(f"调用实例方法:process_binlog()执行Binlog转SQL\n\n")
     binlog2sql.process_binlog()
