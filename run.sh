@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo -e "环境变量:"
+env
+
 PARA="-h $HOST -u $USER -p $PASSWORD -P $PORT --start-file $START_FILE --stop-file $STOP_FILE"
 [ -n "$START_POSITION" ] && {
     PARA="$PARA --start-position $START_POSITION"

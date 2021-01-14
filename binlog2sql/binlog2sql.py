@@ -188,7 +188,7 @@ class LogUtil(object):
 
 if __name__ == '__main__':
     logger = LogUtil()
-    logger.log("解析位置参数")
+    logger.log("开始执行脚本, 解析位置参数")
     args = command_line_args(sys.argv[1:])
     conn_setting = {'host': args.host, 'port': args.port, 'user': args.user, 'passwd': args.password, 'charset': 'utf8'}
     logger.log(f"定义连接字符串, conn_setting:{conn_setting}")
