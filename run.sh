@@ -44,7 +44,7 @@ cd binlog2sql
 # --start-datetime "$START_TIME" --stop-datetime "$STOP_TIME" --stop-never $STOP_NEVER -d $DATABASES -t $TABLES --only-dml $ONLY_DML --sql-type $SQL_TYPE -K $NO_PK -B $FLASHBACK \
 # --back-interval $BACK_INTERVAL
 
-[ -n "$START_TIME" ] && [ -n "$STOP_TIME"] && {
+[ -n "$START_TIME" ] && [ -n "$STOP_TIME" ] && {
     echo -e "执行脚本:python3 binlog2sql.py $PARA --start-datetime $START_TIME --stop-datetime $STOP_TIME"
     python3 binlog2sql.py $PARA --start-datetime "$START_TIME" --stop-datetime "$STOP_TIME"
 } || {
