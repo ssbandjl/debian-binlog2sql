@@ -1,5 +1,5 @@
 # FROM python:3.7.9-slim-stretch
-FROM python:3.4
+FROM python:2.7
 
 WORKDIR binlog2sql
 # RUN apt-get update && apt-get install git -y 
