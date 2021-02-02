@@ -47,9 +47,9 @@ cd binlog2sql
 # --back-interval $BACK_INTERVAL
 
 [ -n "$START_TIME" ] && [ -n "$STOP_TIME" ] && {
-    echo -e "执行脚本:python3 binlog2sql.py $PARA --start-datetime $START_TIME --stop-datetime $STOP_TIME"
+    echo -e "执行脚本:python binlog2sql.py $PARA --start-datetime $START_TIME --stop-datetime $STOP_TIME"
     python3 binlog2sql.py $PARA --start-datetime "$START_TIME" --stop-datetime "$STOP_TIME"
 } || {
-    echo -e "执行脚本:python3 binlog2sql.py $PARA"
+    echo -e "执行脚本:python binlog2sql.py $PARA"
     python3 binlog2sql.py $PARA
 }
